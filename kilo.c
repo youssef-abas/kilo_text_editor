@@ -696,15 +696,42 @@ void editorInsertNewline()
 void editorDelChar()
 {
     if (E.cy == E.numRows)
+    {
+        if (E.numRows != 0)
+        {
+            E.cy--;
+            E.cx = E.row[E.cy].size;
+        }
+
         return;
+    }
 
     if (E.cx == 0 && E.cy == 0)
         return;
 
     if (E.cx > 0)
     {
-        editorRowDelChar(&E.row[E.cy], E.cx - 1);
-        E.cx--;
+        int spaces = 1;
+        for (int i = 0; i < E.cx; i++)
+        {
+            if (E.row[E.cy].chars[i] != ' ' && E.row[E.cy].chars[i] != '\t')
+                spaces = 0;
+        }
+
+        if (spaces)
+        {
+            E.cx--;
+            while (E.cx % KILO_TAB_STOP)
+            {
+                editorRowDelChar(&E.row[E.cy], E.cx - 1);
+                E.cx--;
+            }
+        }
+        else
+        {
+            editorRowDelChar(&E.row[E.cy], E.cx - 1);
+            E.cx--;
+        }
     }
     else
     {
